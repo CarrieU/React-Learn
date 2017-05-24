@@ -7,26 +7,154 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.38/browser.js"></script>
 </head>
 <body>
-<div id="example"></div>
+<div id="div01"></div>
+<div id="div02"></div>
+<div id="div03"></div>
+<div id="div04"></div>
+<div id="div05"></div>
+<a href="http://blog.csdn.net/thystar/article/details/48047519">
+    常用事件有哪些？事件对象event？</a> 
 <script type="text/babel">
-    function formatName(user) {
-        return user.firstName + ' ' + user.lastName;
-    }
-
-    const user = {
-        firstName: 'Harper',
-        lastName: 'Perez'
-    };
-
-    const element = (
-            <h1>
-                Hello, {formatName(user)}!
-            </h1>
-    );
+    //es5原生方式React.createClass定义的组件
+    //！！！“Test01”首字母大写
+    //！！！只能有一个根节点（ex:test04）
+    //test01
+    var Test01 = React.createClass({
+        render:function(){
+            return (<div>Hello , world!</div>);
+        }
+    });
+    ReactDOM.render(<Test01/>, document.getElementById('div01'));
+    //test02 绑定参数
+    var Test02 = React.createClass({
+        render:function(){
+            return (<div>Hello , {this.props.name}!</div>);
+        }
+    });
+    ReactDOM.render(<Test02 name="world"/>, document.getElementById('div02'));
+    //生命周期
+    var Test03 = React.createClass({
+        getInitialState:function(){
+            console.log("getInitialState");
+            return {
+                opacity:0.5,
+                text: this.props.initialValue || 'test'
+            }
+        },
+        render:function(){
+            console.log("render");
+            return (<div style={{opacity:this.state.opacity}}>Hello , {this.state.text}!</div>);
+        },
+        componentWillMount:function(){
+            console.log("componentWillMount");
+        },
+        /*componentDidMount:function(){
+            console.log("componentDidMount");
+            var _self = this;
+            window.setTimeout(function(){
+                _self.setState({
+                    opacity:1.0,
+                });
+            },3000);
+        }*/
+        componentDidMount:function(){
+            console.log("componentDidMount");
+            window.setTimeout(function(){
+                this.setState({
+                    opacity:1.0,
+                });
+            }.bind(this),3000);
+        }
+    });
+    ReactDOM.render(<Test03 name="world"/>, document.getElementById('div03'));
+    //test04 事件绑定(驼峰式命名)
+    var Test04_click = React.createClass({
+        //event在原生js的event对象上封装
+        handleClick:function(event){
+            //0.13以前版本  var tipE = React,findDOMNode(this.refs.tip);
+            var tipE = this.refs.tip; 
+            if(tipE.style.display==='none'){
+                tipE.style.display = 'inline';
+            }else{
+                tipE.style.display = 'none';
+            }
+            event.stopPropagation();//阻止事件冒泡
+            event.preventDefault();//阻止默认行为
+        },
+        render: function(){
+            return <div>
+                <button onClick={this.handleClick}>show | hide</button>
+                <span ref="tip">click text</span>
+            </div>
+        }
+    });
+    var Test04_input = React.createClass({
+        handleChange:function(event){
+            //alert(event.target.value)
+            this.setState({
+                inputContent:event.target.value
+            });
+            event.stopPropagation();//阻止事件冒泡
+            event.preventDefault();//阻止默认行为
+        },
+        getInitialState:function(){
+            return{
+                inputContent:''
+            };
+        },
+        render: function(){
+            return <div>
+                <input type="text" onChange={this.handleChange}/>
+                <span>{this.state.inputContent}</span>
+            </div>
+        }
+    });
     ReactDOM.render(
-            element,
-            document.getElementById('example')
-    );
+        <div>
+            <Test04_click/>
+            <Test04_input/>
+        </div>, document.getElementById('div04'));
+    //test05 props
+    var Test05 = React.createClass({
+        propTypes: {//定义传入props中的属性各种类型
+            initialValue: React.PropTypes.string
+        },
+        defaultProps: { //组件默认的props对象
+            initialValue: ''
+        },
+        // 设置 initial state
+        getInitialState: function() {//组件相关的状态对象
+            console.log("getInitialState:"+this.props.initialValue)
+            return {
+                text: this.props.initialValue || 'nothing'
+            };
+        },
+        handleFocus: function(event) {
+            this.setState({
+                text:'onFocus'
+            });
+        },
+        handleBlur:function(event){
+            this.setState({
+                text:'Try again'
+            });
+        },
+        render: function() {
+            return (
+                <div>
+                    <input onFocus={this.handleFocus} onBlur={this.handleBlur} value={this.state.text} />
+                </div>
+            );
+        }
+    });
+
+    Test05.propTypes = {
+        initialValue: React.PropTypes.string
+    };
+    Test05.defaultProps = {
+        initialValue: 'Type something'
+    };
+    ReactDOM.render(<Test05/>, document.getElementById('div05'));
 </script>
 </body>
 </html>
