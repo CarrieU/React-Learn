@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>test03</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.5.4/react.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.5.4/react-dom.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.38/browser.js"></script>
+</head>
+<body>
+	<div id="div01"></div>
+	<div id="div02"></div>
+	<div id="div03"></div>
+	<div id="div04"></div>
+	<div id="div05"></div>
+	<script type="text/babel">
+	//es6形式的extends React.Component定义的组件
+	//test01
+	class Test01 extends React.Component {
+		render(){
+			return <div>Hello world!</div>
+		}
+	}
+	ReactDOM.render(<Test01/>,document.getElementById('div01'));
+	//test02
+	class Test02 extends React.Component{
+		render(){
+			return (<div style={{color: this.props.color}}>Hello world!</div>);
+		}
+	}
+	ReactDOM.render(<Test02 color="red"/>,document.getElementById('div02'));
+	//test03
+	class Test03 extends React.Component{
+		constructor(props) {
+			super(props);
+		    this.state = {secondsElapsed: 0};
+		}
+
+		tick() {
+		    this.setState((prevState) => ({
+		        secondsElapsed: prevState.secondsElapsed + 1
+		    }));
+		}
+
+		componentDidMount() {
+			console.log('componentDidMount');
+		    this.interval = setInterval(() => this.tick(), 1000);
+		}
+		//组件被移除前执行
+		componentWillUnmount() {
+			alert('componentWillUnmount');
+		    clearInterval(this.interval);
+		}
+
+		render() {
+		    return (
+		        <div>Seconds Elapsed: {this.state.secondsElapsed}</div>
+		    );
+		}
+	}
+	ReactDOM.render(<Test03/>,document.getElementById('div03'));
+	</script>
+</body>
+</html>
